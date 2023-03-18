@@ -2,13 +2,20 @@ import Cards from "./components/Cards/Cards";
 import style from "./App.module.css";
 import Nav from "./components/Nav/Nav";
 import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import Card from "./components/Card/Card";
+import About from "./components/About/About";
+import Detail from "./components/Detail/Detail";
 
 function App() {
-  function onSearch(character) {
-    fetch(`https://rickandmortyapi.com/api/character/${character}`)
+  function onSearch(id) {
+    if (characters.find((char) => char.id === id)) {
+      return alert("Personaje Duplicado");
+    }
+    fetch(`https://rickandmortyapi.com/api/character/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        if (data.name && !characters.find((char) => char.id === data.id)) {
+        if (data.name) {
           setCharacters((oldChars) => [...oldChars, data]);
         } else {
           window.alert("No hay personajes con ese ID");
@@ -24,7 +31,14 @@ function App() {
       <div className={style.nav}>
         <Nav onSearch={onSearch} />
       </div>
-      <Cards characters={characters} onClose={onClose} />
+      <Routes>
+        <Route
+          path="/home"
+          element={<Cards characters={characters} onClose={onClose} />}
+        ></Route>
+        <Route path="/about" element={<About />}></Route>
+        <Route path="/detail/:detailId" element={<Detail />}></Route>
+      </Routes>
     </div>
   );
 }
